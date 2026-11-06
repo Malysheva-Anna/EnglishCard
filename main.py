@@ -13,8 +13,13 @@ st.set_page_config(page_title='EnglishCard')
 st.title('EnglishCard')
 st.write('Привет! Давай учить английские слова.')
 
+
 if 'user_id' not in st.session_state:
     st.session_state.user_id = None
+
+if 'username' not in st.session_state:
+    st.session_state.username = None
+
 if 'current_word' not in st.session_state:
     st.session_state.current_word = None
 
@@ -27,16 +32,30 @@ if 'answered' not in st.session_state:
 if 'answer_message' not in st.session_state:
     st.session_state.answer_message = ''
 
-if st.session_state.user_id is None:
-    username = st.text_input('Введи своё имя')
+if 'attempts' not in st.session_state:
+    st.session_state.attempts = 0
 
-    if st.button('Войти'):
-        if username.strip():
-            user_id = get_or_create_user(username.strip())
-            st.session_state.user_id = user_id
-            st.session_state.username = username.strip()
-        else:
-            st.error('Пожалуйста, введи имя.')
+if 'finished' not in st.session_state:
+    st.session_state.finished = False
+
+
+if st.session_state.user_id is None:
+    with st.form('login_form'):
+        username = st.text_input('Введи своё имя')
+
+        submitted = st.form_submit_button('Войти')
+
+        if submitted:
+            if username.strip():
+                user_id = get_or_create_user(username.strip())
+
+                st.session_state.user_id = user_id
+                st.session_state.username = username.strip()
+
+                st.rerun()
+            else:
+                st.error('Пожалуйста, введи имя.')
+
 
 else:
     st.success(
@@ -50,9 +69,11 @@ else:
         st.session_state.options = []
         st.session_state.answered = False
         st.session_state.answer_message = ''
+        st.session_state.attempts = 0
+        st.session_state.finished = False
+
         st.rerun()
 
-    # Добавление нового слова
     with st.expander('Добавить своё слово'):
         with st.form('add_word_form'):
             english_word = st.text_input(
@@ -79,7 +100,6 @@ else:
                 else:
                     st.error('Заполни оба поля.')
 
-    # Удаление своего слова
     with st.expander('Удалить своё слово'):
         user_words = get_user_words(
             st.session_state.user_id
@@ -107,45 +127,68 @@ else:
         else:
             st.write('У тебя пока нет слов.')
 
-    # Получение текущего слова
     if st.session_state.current_word is None:
         st.session_state.current_word = get_random_word(
             st.session_state.user_id
         )
+
         st.session_state.options = get_answer_options(
             st.session_state.user_id,
             st.session_state.current_word[0]
         )
 
-    # Отображение карточки
     if st.session_state.current_word:
         word = st.session_state.current_word
 
         st.subheader('Переведи слово:')
         st.title(word[2])
 
-        if not st.session_state.answered:
+        if not st.session_state.finished:
             for option in st.session_state.options:
                 if st.button(option):
                     if option == word[1]:
                         st.session_state.answered = True
-                        st.session_state.answer_message = 'Правильно!'
-                    else:
+                        st.session_state.finished = True
                         st.session_state.answer_message = (
-                            'Неправильно! Попробуй ещё раз.'
+                            'Правильно!'
                         )
+                    else:
+                        st.session_state.attempts += 1
+
+                        if st.session_state.attempts >= 2:
+                            st.session_state.finished = True
+                            st.session_state.answered = False
+
+                            st.session_state.answer_message = (
+                                f'Попытки закончились. '
+                                f'Правильный ответ: {word[1]}'
+                            )
+                        else:
+                            st.session_state.answer_message = (
+                                'Неправильно! Попробуй ещё раз.'
+                            )
 
         if st.session_state.answer_message:
             if st.session_state.answered:
-                st.success(st.session_state.answer_message)
+                st.success(
+                    st.session_state.answer_message
+                )
+            elif st.session_state.finished:
+                st.error(
+                    st.session_state.answer_message
+                )
             else:
-                st.error(st.session_state.answer_message)
+                st.warning(
+                    st.session_state.answer_message
+                )
 
-        if st.session_state.answered:
+        if st.session_state.finished:
             if st.button('Следующее слово'):
                 st.session_state.current_word = None
                 st.session_state.options = []
                 st.session_state.answered = False
                 st.session_state.answer_message = ''
-                st.rerun()
+                st.session_state.attempts = 0
+                st.session_state.finished = False
 
+                st.rerun()
