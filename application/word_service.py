@@ -8,7 +8,11 @@ def get_user_words(user_id):
 
     cur.execute(
         '''
-        SELECT words.id, words.english_word, words.russian_translation
+        SELECT
+            words.id,
+            words.english_word,
+            words.russian_translation,
+            words.is_common
         FROM words
         JOIN user_words ON words.id = user_words.word_id
         WHERE user_words.user_id = %s
