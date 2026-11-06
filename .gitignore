@@ -1,0 +1,6 @@
+streamlit_test_app.py
+.env
+.venv/
+.idea/
+__pycache__/
+*.pyc
