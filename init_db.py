@@ -5,7 +5,7 @@ import psycopg2
 from psycopg2 import sql
 from dotenv import load_dotenv
 
-from database_connection import get_connection
+from application.database_connection import get_connection
 
 
 load_dotenv()

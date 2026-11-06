@@ -1,4 +1,4 @@
-from database_connection import get_connection
+from application.database_connection import get_connection
 
 
 def get_or_create_user(username):
