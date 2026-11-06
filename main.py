@@ -43,6 +43,15 @@ else:
         f'С возвращением, {st.session_state.username}!'
     )
 
+    if st.button('Выйти'):
+        st.session_state.user_id = None
+        st.session_state.username = None
+        st.session_state.current_word = None
+        st.session_state.options = []
+        st.session_state.answered = False
+        st.session_state.answer_message = ''
+        st.rerun()
+
     # Добавление нового слова
     with st.expander('Добавить своё слово'):
         with st.form('add_word_form'):
@@ -76,17 +85,12 @@ else:
             st.session_state.user_id
         )
 
-        custom_words = [
-            word for word in user_words
-            if not word[3]
-        ]
+        words_dict = {
+            f'{word[1]} — {word[2]}': word[0]
+            for word in user_words
+        }
 
-        if custom_words:
-            words_dict = {
-                f'{word[1]} — {word[2]}': word[0]
-                for word in custom_words
-            }
-
+        if words_dict:
             selected_word = st.selectbox(
                 'Выбери слово для удаления',
                 options=list(words_dict.keys())
@@ -98,10 +102,10 @@ else:
                     words_dict[selected_word]
                 )
 
-                st.success('Слово удалено!')
+                st.success('Слово удалено из твоего списка!')
                 st.rerun()
         else:
-            st.write('У тебя пока нет собственных слов.')
+            st.write('У тебя пока нет слов.')
 
     # Получение текущего слова
     if st.session_state.current_word is None:
