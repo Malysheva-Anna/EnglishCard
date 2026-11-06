@@ -38,8 +38,8 @@ def add_word(user_id, english_word, russian_translation):
     if word is None:
         cur.execute(
             '''
-            INSERT INTO words (english_word, russian_translation)
-            VALUES (%s, %s)
+            INSERT INTO words (english_word, russian_translation, is_common)
+            VALUES (%s, %s, FALSE)
             RETURNING id
             ''',
             (english_word, russian_translation)

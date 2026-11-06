@@ -21,7 +21,7 @@ def get_or_create_user(username):
         user_id = cur.fetchone()[0]
 
         cur.execute(
-            'SELECT id FROM words'
+            'SELECT id FROM words WHERE is_common = TRUE'
         )
 
         words = cur.fetchall()

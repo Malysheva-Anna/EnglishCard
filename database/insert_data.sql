@@ -1,13 +1,13 @@
-INSERT INTO words (english_word, russian_translation)
+INSERT INTO words (english_word, russian_translation, is_common)
 VALUES
-    ('apple', 'яблоко'),
-    ('red', 'красный'),
-    ('blue', 'синий'),
-    ('green', 'зелёный'),
-    ('house', 'дом'),
-    ('book', 'книга'),
-    ('cat', 'кошка'),
-    ('dog', 'собака'),
-    ('water', 'вода'),
-    ('sun', 'солнце')
+    ('apple', 'яблоко', TRUE),
+    ('red', 'красный', TRUE),
+    ('blue', 'синий', TRUE),
+    ('green', 'зелёный', TRUE),
+    ('house', 'дом', TRUE),
+    ('book', 'книга', TRUE),
+    ('cat', 'кошка', TRUE),
+    ('dog', 'собака', TRUE),
+    ('water', 'вода', TRUE),
+    ('sun', 'солнце', TRUE)
 ON CONFLICT (english_word) DO NOTHING;

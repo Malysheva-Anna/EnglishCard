@@ -6,7 +6,8 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS words (
     id SERIAL PRIMARY KEY,
     english_word VARCHAR(100) NOT NULL UNIQUE,
-    russian_translation VARCHAR(100) NOT NULL
+    russian_translation VARCHAR(100) NOT NULL,
+    is_common BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE IF NOT EXISTS user_words (
